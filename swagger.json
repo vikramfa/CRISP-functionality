@@ -1,0 +1,290 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Batch API",
+    "description": "To persist the uploaded file.",
+    "version": ""
+  },
+  "host": "localhost:8000",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/api/batches/": {
+      "get": {
+        "operationId": "batches_list",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "example": {
+                "batch_id": 6,
+                "source_file_name": "/batch_files/ip_address.xlsx",
+                "batch_name": "crisp",
+                "total_record": 12,
+                "batch_status": "init",
+                "file_format": "X",
+                "timestamp": "2018-05-17T14:32:36.674327Z"
+              }
+            }
+          },
+          "500": {
+            "description": "General Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "batch_status",
+            "required": false,
+            "in": "query",
+            "description": "To filter the Batch record by status.",
+            "type": "string"
+          },
+          {
+            "name": "user_created_by",
+            "required": false,
+            "in": "query",
+            "description": "To filter the Batch record by user_created_by field.",
+            "type": "string"
+          }
+        ],
+        "description": "Return a list of all Batches in the system.",
+        "summary": "Return a list of all Batches in the system.",
+        "tags": [
+          "batches"
+        ]
+      },
+      "post": {
+        "operationId": "batches_create",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "example": {
+                "batch_id": 6,
+                "source_file_name": "/batch_files/ip_address.xlsx",
+                "batch_name": "crisp",
+                "total_record": 12,
+                "batch_status": "init",
+                "file_format": "X",
+                "timestamp": "2018-05-17T14:32:36.674327Z"
+              }
+            }
+          },
+          "404": {
+            "description": "Kafka Server Not Available"
+          },
+          "500": {
+            "description": "General Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "source_file_name",
+            "in": "formData",
+            "description": "file to upload",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "batch_name",
+            "in": "formData",
+            "description": "name it",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "description": "Provide your user id.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "total_record",
+            "in": "formData",
+            "description": "number of records present",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "batch_status",
+            "in": "formData",
+            "description": "status of the batch",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "file_format",
+            "in": "formData",
+            "description": "extension of the file",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user_created_by",
+            "in": "formData",
+            "description": "user who uploads the file",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "description": "Create a Batch in the system, uploads the file and publish the message in Kafka Server.",
+        "summary": "Create a Batch in the system, uploads the file and publish the message in Kafka Server.",
+        "tags": [
+          "batches"
+        ]
+      }
+    },
+    "/api/batches/{batch_id}/": {
+      "get": {
+        "operationId": "batches_read",
+        "responses": {
+          "200": {
+            "description": "successful retrieval",
+            "schema": {
+              "type": "object",
+              "example": {
+                "batch_id": 6,
+                "source_file_name": "/batch_files/ip_address.xlsx",
+                "batch_name": "crisp",
+                "total_record": 12,
+                "batch_status": "init",
+                "file_format": "X",
+                "timestamp": "2018-05-17T14:32:36.674327Z"
+              }
+            }
+          },
+          "404": {
+            "description": "Batch Record Not Found"
+          },
+          "500": {
+            "description": "General Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "batch_id",
+            "required": true,
+            "in": "path",
+            "description": "A unique integer value identifying this batch.",
+            "type": "integer"
+          },
+          {
+            "name": "batch_status",
+            "required": false,
+            "in": "query",
+            "description": "",
+            "type": "string"
+          },
+          {
+            "name": "user_created_by",
+            "required": false,
+            "in": "query",
+            "description": "",
+            "type": "string"
+          }
+        ],
+        "description": "Retrieves a Batch record that matches the given batch_id.",
+        "summary": "Retrieves a Batch record that matches the given batch_id.",
+        "tags": [
+          "batches"
+        ]
+      }
+    },
+    "/api/batches/{batch_id}/cancel/": {
+      "get": {
+        "operationId": "batches_cancel",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "type": "object",
+              "example": {
+                "batch_id": 6,
+                "batch_status": "CANCEL"
+              }
+            }
+          },
+          "404": {
+            "description": "Kafka Server Not Available"
+          },
+          "500": {
+            "description": "General Error"
+          }
+        },
+        "parameters": [
+          {
+            "name": "batch_id",
+            "required": true,
+            "in": "path",
+            "description": "A unique integer value identifying this batch.",
+            "type": "integer"
+          }
+        ],
+        "description": "Updates the batch status to cancel.",
+        "summary": "Updates the batch status to cancel.",
+        "tags": [
+          "batches"
+        ]
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basic": {
+      "type": "basic"
+    }
+  },
+  "definitions": {
+    "Batch": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "integer"
+        },
+        "user_created_by": {
+          "type": "string"
+        },
+        "source_file_name": {
+          "type": "string"
+        },
+        "batch_name": {
+          "type": "string"
+        },
+        "total_records": {
+          "type": "integer"
+        },
+        "batch_status": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "file_format": {
+          "type": "string",
+          "enum": [
+            "csv",
+            "tsv",
+            "xlsx"
+          ]
+        }
+      }
+    }
+  }
+}
